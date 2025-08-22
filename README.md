@@ -44,8 +44,6 @@ src_to_implement/
 ├─ NeuralNetworkTests.py
 ├─ TrainLeNet.py
 ├─ log.txt
-├─ 3_1_Regularization.pdf
-├─ 3_2_Recurrent.pdf
 └─ dispatch.py
 ```
 
