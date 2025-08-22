@@ -1,24 +1,19 @@
-README.md
-Deep Learning Exercise 3 — Neural Networks from Scratch (Regularization, RNN, LeNet)
-Overview
+# Neural Networks From Scratch (NumPy)
 
-This repository contains a from-scratch (NumPy-based) neural network mini-framework and exercises. You’ll implement core layers and training logic, add regularization and optimizers, and train classic models such as LeNet. A simple RNN is included to introduce recurrent computation and BPTT.
+A lightweight, NumPy-based mini framework for training neural networks from first principles. It includes modular layers (FC/Conv/Pooling/Activations), regularization (BatchNorm/Dropout/L2), a simple RNN, losses and optimizers, unit tests, and a LeNet training script.
 
-Highlights
+## Features
 
-Modular layers: Fully Connected, Conv, Pooling, Flatten, common activations
+* Modular layers: Fully Connected, Convolution, Pooling, Flatten, common activations
+* Regularization & stabilization: Batch Normalization, Dropout, L2 weight decay
+* Recurrent layer: basic RNN with backpropagation through time
+* Optimizers & losses: configurable training loop
+* Unit tests and a self-contained LeNet example
+* Minimal dependencies (NumPy + Matplotlib)
 
-Regularization: L2 weight decay, Dropout, Batch Normalization
+## Project layout
 
-Recurrent layer: basic RNN
-
-Optimizers and losses
-
-Unit tests and a LeNet training script
-
-Minimal dependencies (NumPy + Matplotlib)
-
-Project layout
+```
 src_to_implement/
 ├─ Data/
 ├─ Layers/
@@ -44,7 +39,7 @@ src_to_implement/
 │  ├─ Loss.py
 │  ├─ Optimizers.py
 │  └─ __init__.py
-├─ metplotlib/             # (typo) consider renaming to 'matplotlib'
+├─ metplotlib/              # consider renaming to `matplotlib/`
 ├─ NeuralNetwork.py
 ├─ NeuralNetworkTests.py
 ├─ TrainLeNet.py
@@ -52,80 +47,74 @@ src_to_implement/
 ├─ 3_1_Regularization.pdf
 ├─ 3_2_Recurrent.pdf
 └─ dispatch.py
+```
 
-Installation
-python -V          # 3.8+ recommended
-pip install numpy matplotlib
+## Quick start
 
+### 1) Run tests
 
-If your dataset loader or plotting utilities require anything else, install as needed.
+Validate forward/backward passes, tensor shapes, and gradient flow:
 
-Quick start
-1) Run the unit tests
-
-Make sure layer shapes, forward/backward passes, and gradients behave as expected.
-
+```bash
 python NeuralNetworkTests.py
+```
 
-2) Train LeNet (example)
+### 2) Train LeNet
+
+```bash
 python TrainLeNet.py
+```
 
+Typical flow: load data → build LeNet → set loss/optimizer → train for N epochs → write logs/plots.
+Check available flags (if provided) with:
 
-The script typically: loads data → builds LeNet → sets loss/optimizer → trains for N epochs → logs to log.txt and/or plots with Matplotlib.
-
-Check available flags (if any) with:
-
+```bash
 python TrainLeNet.py -h
+```
 
-3) (Optional) Exercise dispatcher
+### 3) Task dispatcher (optional)
 
-If dispatch.py is provided to run specific subtasks:
+If present, this can run predefined tasks:
 
+```bash
 python dispatch.py
+```
 
-What you implement
+## Implementation guide
 
-Each layer/module follows a simple contract:
+**Layer contract**
 
-forward(x) returns outputs and caches what’s needed for backprop.
+* `forward(x)`: returns output and caches intermediates needed for backprop.
+* `backward(dout)`: returns `dx` and accumulates parameter gradients.
+* Switch train/eval modes where needed (BatchNorm/Dropout).
 
-backward(dout) returns gradients w.r.t. inputs and accumulates param grads.
+**Convolution/Pooling**
 
-Train/Eval modes (BatchNorm/Dropout) must be handled correctly.
+* Handle padding/stride/output size carefully.
+* Keep tensor layout consistent across layers.
 
-Focus areas:
+**Softmax + Cross-Entropy**
 
-Layers: FullyConnected, Conv (padding/stride/output size), Pooling, Flatten
+* Use numerically stable computations (subtract max, log-sum-exp).
 
-Activations: ReLU, Sigmoid, TanH
+**BatchNorm/Dropout**
 
-Output: SoftMax (use log-sum-exp tricks for numerical stability)
+* Different behavior in training vs. evaluation; manage running stats and masks.
 
-Regularization: BatchNormalization, Dropout
+**RNN**
 
-Recurrent: RNN forward over sequences and BPTT
+* Sequence forward, hidden-state carryover, and BPTT (truncated if desired).
 
-Optimization/Loss: implementations in Optimization/Loss.py and Optimizers.py (e.g., SGD, Momentum, Adam; cross-entropy, MSE, etc.)
+**Optimizers/Losses**
 
-Tips & troubleshooting
+* Implement/choose in `Optimization/` (e.g., SGD, Momentum, Adam; CE, MSE).
 
-Start small: a tiny subset of data and a few iterations—ensure loss goes down.
+## Tips & troubleshooting
 
-Verify shapes at every layer; mismatched NCHW/NHWC will break conv/pool.
+* Start small (tiny dataset subset, few iterations) and confirm the loss decreases.
+* Print/assert shapes at boundaries; NCHW/NHWC mismatches are common.
+* Add complexity gradually: baseline → BN/Dropout/weight decay.
+* Use numerical gradient checks (where available) before long trainings.
+* Logs and figures: see `log.txt` and the plotting utilities.
 
-For Softmax+CrossEntropy use stable computations (subtract max, log-sum-exp).
-
-BatchNorm/Dropout: different behavior in train vs. eval.
-
-Use the tests and (if available) numerical gradient checks before full training.
-
-Dataset note
-
-The Data/ module loads the dataset configured by the scripts (commonly MNIST for LeNet). If you need to switch datasets, adjust the loader and model input shapes accordingly.
-
-Naming & logging
-
-Consider renaming metplotlib/ → matplotlib/ for clarity.
-
-Training output/metrics may be written to log.txt.
 
